@@ -77,6 +77,10 @@ class SQLiteDatabase {
     }
   }
 
+  static Future<List<Map<String, dynamic>>> searchDataByTitle(String title) async {
+    final db = await SQLiteDatabase.db();
+    return await db.query('eNotebook', where: 'title LIKE ?', whereArgs: ['%$title%']);
+  }
 
 
 

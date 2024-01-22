@@ -74,10 +74,11 @@ class _NotebookPageState extends State<NotebookPage> {
                   child: Container(
                     width: 60,height: 60,
                     decoration: BoxDecoration(
-                      color: Colors.grey,
-                      image: image != null?DecorationImage(image: FileImage(File(image!.path)),fit: BoxFit.cover):null,
+                      color:  image != null?null:Colors.grey,
+                      borderRadius: BorderRadius.circular(16),
+                      image: image != null?DecorationImage(image: FileImage(File(image!.path)),fit: BoxFit.contain):null,
                     ),
-                    child: image == null?Icon(Icons.add):Container(),
+                    child: image == null?Icon(Icons.add,color: Colors.white,):Container(),
                   ),
                 ),
                 SizedBox(width: 10,),
@@ -98,14 +99,39 @@ class _NotebookPageState extends State<NotebookPage> {
                     )
                   ),
                     onPressed: (){
-                       addData();
-                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomePage()));
-                       setState(() {});
+                    if(titleController.text.isEmpty || image == null || descController.text.isEmpty){
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Row(
+                          children: [
+                            Icon(Icons.error_outline,color: Colors.white,size: 25,),
+                            SizedBox(width: 5,),
+                            Expanded(child: Text('Please Create NoteBook to add Book Logo ,Title and Write content of Book!',maxLines: 2,)),
+                          ],
+                        ),
+                        backgroundColor: Colors.redAccent,
+                        padding: EdgeInsets.symmetric(horizontal: 10,vertical: 15),)
+                      );
+                    }else{
+                      addData();
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomePage()));
+                      setState(() {});
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Row(
+                            children: [
+                              Icon(Icons.download_done_outlined,color: Colors.white,size: 25,),
+                              SizedBox(width: 5,),
+                              Expanded(child: Text('Successfully added NoteBook...',maxLines: 2,)),
+                            ],
+                          ),
+                            backgroundColor: Colors.green, padding: EdgeInsets.symmetric(horizontal: 10,vertical: 15),)
+                      );
+                    }
+
                 }, child:Text('Add \nNoteBook',textAlign: TextAlign.center,style: TextStyle(color: Colors.white,fontSize: 12),) )
               ],
             ),
             widget.isDesc == true?SizedBox(height: 25,):SizedBox(),
-            widget.isDesc == true?Expanded(
+            widget.isDesc?Expanded(
               child: SingleChildScrollView(
                 child: TextFormField(
                   controller: descController,
@@ -118,25 +144,18 @@ class _NotebookPageState extends State<NotebookPage> {
                   ),
                 ),
               ),
-            ):Expanded(
-              child: ListView.builder(
-                itemCount: addWidgetsList.length,
-                  itemBuilder: (ctx,index){
-                return Column(
-                  children: [
-                    TextFormField(
-                      controller: descController,
-                      minLines: 1,
-                      maxLines: 500,
-                      decoration: InputDecoration(
-                        hintText: 'Write content',
-                        border: InputBorder.none,
-                      ),
-                    ),
-                  ],
-                );
-              }),
-            )
+            ):
+            Expanded(
+              child: TextFormField(
+                controller: descController,
+                minLines: 1,
+                maxLines: 500,
+                decoration: InputDecoration(
+                  hintText: 'Write book content...',
+                  border: InputBorder.none,
+                ),
+              ),
+            ),
           ],
         ),
       ),
